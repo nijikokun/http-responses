@@ -1,6 +1,7 @@
 # http-responses
 
 [![NPM Version][npm-image]][npm-url]
+[![NPM Download][downloads-image]][downloads-url]
 
 Middleware for standardizing the way you send HTTP response statuses.
 
@@ -154,7 +155,7 @@ app.use(function (err, req, res, next) {
 [travis-url]: https://travis-ci.org/Nijikokun/http-responses
 [coveralls-image]: https://img.shields.io/coveralls/Nijikokun/http-responses.svg?style=flat
 [coveralls-url]: https://coveralls.io/r/Nijikokun/http-responses?branch=master
-[downloads-image]: https://img.shields.io/npm/dm/http-responses.svg?style=flat
+[downloads-image]: https://img.shields.io/npm/dm/http-statuses.svg?style=flat
 [downloads-url]: https://npmjs.org/package/http-responses
 [gratipay-image]: https://img.shields.io/gratipay/Nijikokun.svg?style=flat
 [gratipay-url]: https://www.gratipay.com/Nijikokun/
