@@ -1,13 +1,13 @@
 # http-responses
 
-[![NPM Version][npm-image][npm-url]]
+[![NPM Version][npm-image]][npm-url]
 [![NPM Downloads][downloads-image]][downloads-url]
 
 Middleware for consistent HTTP request responses.
 
 ## Install
 
-```bash
+```sh
 $ npm install http-responses
 ```
 
