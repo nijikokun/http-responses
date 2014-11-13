@@ -7,7 +7,7 @@ Middleware for standardizing the way you send HTTP response statuses.
 
 Prevents inconsistencies in your code by standardizing the way you handle sending HTTP response statuses and bodies.
 
-###### Before
+###### Without http-responses
 
 ```js
 res.status(401)
@@ -18,7 +18,7 @@ next({ code: 401, message: body })
 next(401)
 ```
 
-###### After
+###### With http-responses
 
 ```js
 return next(new res.Unauthorized(body))
@@ -30,7 +30,7 @@ return next(new res.Unauthorized(body))
 $ npm install http-responses
 ```
 
-Express.js
+Express.js, before router
 
 ```js
 app.use(require('http-responses'))
@@ -46,7 +46,7 @@ app.use(require('http-responses'))
 
 ### Success Methods
 
-- 200: `res.Ok([view, ]body)`
+- 200: `res.ok([view, ]body)`
 
   view is optional, and body can be `String`, `Object`, or `Function`
 - 204: `res.NoContent()`
