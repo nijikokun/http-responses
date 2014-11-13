@@ -36,6 +36,42 @@ Express.js, before router
 app.use(require('http-responses'))
 ```
 
+## Usage Example
+
+```js
+app.use('/:id', function (req, res, next) {
+  if (!req.param('id', false)) {
+    return next(new res.Conflict('Id is required.'));
+  }
+
+  return res.Ok({
+    id: id
+  });
+});
+```
+
+## Express Error Handler
+
+```js
+app.use(function (err, req, res, next) {
+  res.status(err.status).format({
+    json: function () {
+      res.json({
+        code: err.code,
+        message: err.message
+      });
+    },
+
+    html: function () {
+      res.render(err.status, {
+        code: err.code,
+        message: err.message
+      });
+    }
+  });
+});
+```
+
 ## Api
 
 ### Informational Methods
@@ -103,42 +139,6 @@ app.use(require('http-responses'))
 **Special Methods**
 
 - 426: `res.UpgradeRequired(String protocols,[code, ]message)`
-
-## Usage Example
-
-```js
-app.use('/:id', function (req, res, next) {
-  if (!req.param('id', false)) {
-    return next(new res.Conflict('Id is required.'));
-  }
-
-  return res.Ok({
-    id: id
-  });
-});
-```
-
-## Express Error Handler
-
-```js
-app.use(function (err, req, res, next) {
-  res.status(err.status).format({
-    json: function () {
-      res.json({
-        code: err.code,
-        message: err.message
-      });
-    },
-
-    html: function () {
-      res.render(err.status, {
-        code: err.code,
-        message: err.message
-      });
-    }
-  });
-});
-```
 
 ## Supported Frameworks
 
