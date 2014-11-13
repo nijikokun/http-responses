@@ -30,7 +30,7 @@ return next(new res.Unauthorized(body))
 $ npm install http-responses
 ```
 
-Express.js, before router
+Express.js, before routing
 
 ```js
 app.use(require('http-responses'))
@@ -51,6 +51,8 @@ app.use('/:id', function (req, res, next) {
 ```
 
 ## Express Error Handler
+
+Handling errors in express should be done the correct way by defining a middleware that contains an arity of four by including the error argument after your routing has been done. By doing this, anything passed through the next argument will be sent here and we can determine what to do from there, here is a generic example:
 
 ```js
 app.use(function (err, req, res, next) {
