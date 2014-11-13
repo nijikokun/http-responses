@@ -44,7 +44,7 @@ app.use('/:id', function (req, res, next) {
     return next(new res.Conflict('Id is required.'));
   }
 
-  return res.Ok({
+  return res.ok({
     id: id
   });
 });
