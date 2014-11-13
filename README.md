@@ -1,7 +1,6 @@
 # http-responses
 
 [![NPM Version][npm-image]][npm-url]
-[![NPM Downloads][downloads-image]][downloads-url]
 
 Middleware for standardizing the way you send HTTP response statuses.
 
