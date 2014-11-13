@@ -1,7 +1,7 @@
 {
   "name": "http-responses",
-  "version": "0.0.1-1",
-  "description": "Consistent HTTP request responses.",
+  "version": "0.0.2",
+  "description": "Middleware for standardizing the way you send HTTP response statuses.",
   "main": "index.js",
   "scripts": {
     "test": "echo \"Error: no test specified\" && exit 1"

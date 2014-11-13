@@ -58,6 +58,10 @@ var ResponseTypes = {
     this.redirect(302, location);
   },
 
+  NotModified: function () {
+    this.status(304).send();
+  },
+
   TemporaryRedirect: function (location) {
     this.redirect(307, location);
   },

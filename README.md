@@ -3,7 +3,26 @@
 [![NPM Version][npm-image]][npm-url]
 [![NPM Downloads][downloads-image]][downloads-url]
 
-Middleware for consistent HTTP request responses.
+Middleware for standardizing the way you send HTTP response statuses.
+
+Prevents inconsistencies in your code by standardizing the way you handle sending HTTP response statuses and bodies.
+
+###### Before
+
+```js
+res.status(401)
+res.send(401, body)
+res.json(401, body)
+next({ status: 401, message: body })
+next({ code: 401, message: body })
+next(401)
+```
+
+###### After
+
+```js
+return next(new res.Unauthorized(body))
+```
 
 ## Install
 
@@ -28,7 +47,7 @@ app.use(require('http-responses'))
 ### Success Methods
 
 - 200: `res.Ok([view, ]body)`
-  
+
   view is optional, and body can be `String`, `Object`, or `Function`
 - 204: `res.NoContent()`
 
@@ -121,6 +140,11 @@ app.use(function (err, req, res, next) {
 });
 ```
 
+## Supported Frameworks
+
+- [Express][express-url]
+- [Connect][connect-url]
+
 ## License
 
 [MIT](LICENSE)
@@ -135,3 +159,5 @@ app.use(function (err, req, res, next) {
 [downloads-url]: https://npmjs.org/package/http-responses
 [gratipay-image]: https://img.shields.io/gratipay/Nijikokun.svg?style=flat
 [gratipay-url]: https://www.gratipay.com/Nijikokun/
+[express-url]: https://expressjs.com
+[connect-url]: https://github.com/senchalabs/connect
