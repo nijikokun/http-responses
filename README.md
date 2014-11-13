@@ -27,7 +27,9 @@ app.use(require('http-responses'))
 
 ### Success Methods
 
-- 200: `res.Ok([view, ]body)` - view is optional, and body can be `String`, `Object`, or `Function`
+- 200: `res.Ok([view, ]body)`
+  
+  view is optional, and body can be `String`, `Object`, or `Function`
 - 204: `res.NoContent()`
 
 ### Redirect Methods
@@ -43,6 +45,7 @@ app.use(require('http-responses'))
 **Properties**
 
 `code` - optional, sub status-code (iis style); defaults to status code.
+
 `message` - required, mixed type can be string, object, number, date, etc...
 
 **Methods**
