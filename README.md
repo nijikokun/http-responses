@@ -94,6 +94,8 @@ modifying the error handler slightly to support an object, and fallback
 would be for normal www-based errors. Example:
 
 ```js
+var xml = require('js2xmlparser');
+
 app.use(function (err, req, res, next) {
   if (typeof err.message === 'object') {
     res.format({
@@ -186,9 +188,6 @@ app.use(function (err, req, res, next) {
 **Special Methods**
 
 - 426: `res.UpgradeRequired(String protocols,[code, ]message)`
-
-## Ok Usage
-
 
 
 ## Supported Frameworks
