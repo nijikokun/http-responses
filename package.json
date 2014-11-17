@@ -1,6 +1,6 @@
 {
   "name": "http-responses",
-  "version": "0.0.3",
+  "version": "0.0.4",
   "description": "Middleware for standardizing the way you send HTTP response statuses.",
   "main": "index.js",
   "scripts": {
