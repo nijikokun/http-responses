@@ -30,5 +30,8 @@
   "bugs": {
     "url": "https://github.com/Nijikokun/http-responses/issues"
   },
-  "homepage": "https://github.com/Nijikokun/http-responses"
+  "homepage": "https://github.com/Nijikokun/http-responses",
+  "dependencies": {
+    "js2xmlparser": "^0.1.5"
+  }
 }

@@ -4,6 +4,8 @@
  * MIT Licensed
  */
 
+var xml = require('js2xmlparser');
+
 /**
  * Response error codes, and content negotiation methods.
  * @type {Object}
@@ -71,30 +73,57 @@ var ResponseTypes = {
   },
 
   // Content Helpers
-  ok: function (view, body) {
+  ok: function (view, body, api) {
     var self = this;
+
+    function handleGeneric () {
+      return self.send(body);
+    }
+
+    function handleJSON () {
+      return self.json(body);
+    }
+
+    function handleXML () {
+      return self.set('Content-Type', 'application/xml').send(xml(view, body))
+    }
+
+    function handleHTML () {
+      return self.render(view, body);
+    }
+
+    this.status(200);
 
     if (!body) {
       body = view;
       view = undefined;
     }
 
-    this.status(200);
-
     if (typeof body === 'function') {
       body();
     } else {
       this.format({
-        text: function () {
-          self.send(body);
-        },
+        text: handleGeneric,
+        json: handleJSON,
 
-        json: function () {
-          self.json(body);
+        xml: function () {
+          if (view) {
+            return handleXML();
+          }
+
+          return handleGeneric();
         },
 
         html: function () {
-          self.render(view, body);
+          if (view) {
+            if (api) {
+              return handleXML();
+            }
+
+            return handleHTML();
+          }
+
+          return handleGeneric();
         }
       });
     }
@@ -123,7 +152,7 @@ var ResponseTypes = {
  * @private
  */
 function GenericRestError (status) {
-  return function RestError (code, message) {
+  return function RestError (code, message, headers) {
     if (!message) {
       message = code;
       code = status;
@@ -132,8 +161,9 @@ function GenericRestError (status) {
     this.status = status;
     this.code = code;
     this.message = message;
+    this.headers = headers;
   };
-};
+}
 
 /**
  * Iterates over ResponseTypes and sets appropriate method signature according to
