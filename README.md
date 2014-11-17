@@ -41,11 +41,25 @@ app.use(require('http-responses'))
 ```js
 app.use('/:id', function (req, res, next) {
   if (!req.param('id', false)) {
+    // Send errors to the error handler
     return next(new res.Conflict('Id is required.'));
   }
 
-  return res.ok({
-    id: id
+  User.find({ _id: req.param('id') }).then(function (user) {
+    // OK Content Handler
+    //
+    // View is required here, should HTML be request the
+    // server will respond with an XML Object of type User.
+    //
+    // If you do not wish for http-responses to determine type
+    // and handle response-types you can either do responses
+    // as before `res.send`, `res.format`, `res.render` or
+    // pass a function and do the above inside that function.
+    //
+    //   res.ok(function () {
+    //     res.json(user.toJSON());
+    //   })
+    return res.ok('User', user.toJSON(), true);
   });
 });
 ```
@@ -74,6 +88,33 @@ app.use(function (err, req, res, next) {
 });
 ```
 
+If you want to support an API style error where it returns XML, while
+also supporting HTML, we suggest turning message into an object and
+modifying the error handler slightly to support an object, and fallback
+would be for normal www-based errors. Example:
+
+```js
+app.use(function (err, req, res, next) {
+  if (typeof err.message === 'object') {
+    res.format({
+      json: function () {
+        res.json({
+          code: err.code,
+          message: err.message.text
+        })
+      },
+
+      html: function () {
+        res.set('Content-Type', 'application/xml').send(xml(err.message.type || 'ApiError', {
+          code: err.code,
+          message: err.message.text
+        }));
+      }
+    });
+  }
+...
+```
+
 ## Api
 
 ### Informational Methods
@@ -84,9 +125,13 @@ app.use(function (err, req, res, next) {
 
 ### Success Methods
 
-- 200: `res.ok([view, ]body)`
+- 200: `res.ok(String view, Mixed body, Boolean api)`
 
-  view is optional, and body can be `String`, `Object`, or `Function`
+  `view` is optional when api is not specified
+
+  `body` can be `String`, `Object`, or `Function`
+
+  `api` determines handling responses properly for api systems
 - 204: `res.NoContent()`
 
 ### Redirect Methods
@@ -141,6 +186,10 @@ app.use(function (err, req, res, next) {
 **Special Methods**
 
 - 426: `res.UpgradeRequired(String protocols,[code, ]message)`
+
+## Ok Usage
+
+
 
 ## Supported Frameworks
 
