@@ -97,8 +97,10 @@ would be for normal www-based errors. Example:
 var xml = require('js2xmlparser');
 
 app.use(function (err, req, res, next) {
+  res.status(err.status);
+
   if (typeof err.message === 'object') {
-    res.format({
+    return res.format({
       json: function () {
         res.json({
           code: err.code,
