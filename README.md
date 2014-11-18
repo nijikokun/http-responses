@@ -21,7 +21,13 @@ next(401)
 ###### With http-responses
 
 ```js
+// WWW Response
 return next(new res.Unauthorized(body))
+
+// API response
+return next(new res.Unauthorized({
+  body: body
+});
 ```
 
 ## Install
@@ -38,60 +44,37 @@ app.use(require('http-responses'))
 
 ## Usage Example
 
+Semi-real world example, fetching specific user w/ identifier key for an API.
+
 ```js
 app.use('/:id', function (req, res, next) {
   if (!req.param('id', false)) {
-    // Send errors to the error handler
-    return next(new res.Conflict('Id is required.'));
+    return next(new res.Conflict({
+      body: 'Id is required.'
+    }));
   }
 
   User.find({ _id: req.param('id') }).then(function (user) {
-    // OK Content Handler
-    //
-    // View is required here, should HTML be request the
-    // server will respond with an XML Object of type User.
-    //
-    // If you do not wish for http-responses to determine type
-    // and handle response-types you can either do responses
-    // as before `res.send`, `res.format`, `res.render` or
-    // pass a function and do the above inside that function.
-    //
-    //   res.ok(function () {
-    //     res.json(user.toJSON());
-    //   })
-    return res.ok('User', user.toJSON(), true);
+    if (user) {
+      return res.ok('User', user.toJSON(), true);
+    }
+
+    return next(new res.NotFound({
+      body: 'User does not exist'
+    }));
+  }).then(function (err) {
+    if (err) {
+      next(new res.InternalServerError({
+        body: err.message
+      }));
+    }
   });
 });
 ```
 
 ## Express Error Handler
 
-Handling errors in express should be done the correct way by defining a middleware that contains an arity of four by including the error argument after your routing has been done. By doing this, anything passed through the next argument will be sent here and we can determine what to do from there, here is a generic example:
-
-```js
-app.use(function (err, req, res, next) {
-  res.status(err.status).format({
-    json: function () {
-      res.json({
-        code: err.code,
-        message: err.message
-      });
-    },
-
-    html: function () {
-      res.render(err.status, {
-        code: err.code,
-        message: err.message
-      });
-    }
-  });
-});
-```
-
-If you want to support an API style error where it returns XML, while
-also supporting HTML, we suggest turning message into an object and
-modifying the error handler slightly to support an object, and fallback
-would be for normal www-based errors. Example:
+Handling errors in express should be done the correct way by defining a middleware that contains an arity of four by including the error argument after your routing has been done. By doing this, anything passed through the next argument will be sent here and we can determine what to do from there, here is a generic example of supporting both API / WWW errors.
 
 ```js
 var xml = require('js2xmlparser');
@@ -104,19 +87,36 @@ app.use(function (err, req, res, next) {
       json: function () {
         res.json({
           code: err.code,
-          message: err.message.text
+          message: err.message.body
         })
       },
 
       html: function () {
         res.set('Content-Type', 'application/xml').send(xml(err.message.type || 'ApiError', {
           code: err.code,
-          message: err.message.text
+          message: err.message.body
         }));
       }
     });
   }
-...
+
+  res.format({
+    json: function () {
+      res.json({
+        code: err.code,
+        message: err.message
+      });
+    },
+
+    html: function () {
+      res.render('error/index', {
+        status: err.status,
+        code: err.code,
+        message: err.message
+      });
+    }
+  });
+});
 ```
 
 ## Api
@@ -131,11 +131,29 @@ app.use(function (err, req, res, next) {
 
 - 200: `res.ok(String view, Mixed body, Boolean api)`
 
-  `view` is optional when api is not specified
+  `view` (**WWW**: `partials/user/profile` / **API**: `"User"`)
+  >  WWW view path / API XML object type.
+  >  
+  > Can be omitted when `api ` is `false`,
+  > HTML requests will return `text/plain` body as no view is
+  > declared.
 
-  `body` can be `String`, `Object`, or `Function`
+  `body` (`user.toJSON()`)
+  >  Response body, here we retrieve the user json output
 
-  `api` determines handling responses properly for api systems
+  `api` (`true`)
+  >  Determines whether view is an HTML template path or
+  >  an XML object property `<User></User>`
+
+  You can also pass a method that will be invoked if you
+  want to resolve formats yourself:
+
+  ```js
+    res.ok(function () {
+      res.json(user.toJSON());
+    })
+  ```
+
 - 204: `res.NoContent()`
 
 ### Redirect Methods
