@@ -92,10 +92,12 @@ app.use(function (err, req, res, next) {
       },
 
       html: function () {
-        res.set('Content-Type', 'application/xml').send(xml(err.message.type || 'ApiError', {
-          code: err.code,
-          message: err.message.body
-        }));
+        res.set('Content-Type', 'application/xml').send(
+          xml(err.message.type || 'ApiError', {
+            code: err.code,
+            message: err.message.text
+          })
+        );
       }
     });
   }
