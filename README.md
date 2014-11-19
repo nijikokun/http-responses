@@ -193,6 +193,7 @@ app.use(function (err, req, res, next) {
 - 415: `new res.UnsupportedMediaType([code, ]message)`
 - 416: `new res.RangeNotSatisfied([code, ]message)`
 - 417: `new res.ExpectationFailed([code, ]message)`
+- 418: `new res.ImATeapot([code, ]message)`
 - 423: `new res.Locked([code, ]message)`
 - 428: `new res.PreconditionRequired([code, ]message)`
 - 429: `new res.TooManyRequests([code, ]message)`
