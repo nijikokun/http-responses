@@ -50,6 +50,7 @@ var ResponseTypes = {
   UnsupportedMediaType: 415,
   RangeNotSatisfied: 416,
   ExpectationFailed: 417,
+  ImATeapot: 418,
   Locked: 423,
 
   UpgradeRequired: function (protocols, code, message) {
