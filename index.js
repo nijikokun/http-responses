@@ -4,7 +4,27 @@
  * MIT Licensed
  */
 
-var xml = require('js2xmlparser');
+var xml = require('js2xmlparser')
+var util = require('util')
+
+
+function RestError (type, status, code, message, headers) {
+  Error.call(this)
+  Error.captureStackTrace(this, this.constructor)
+
+  if (!message) {
+    message = code
+    code = status
+  }
+
+  this.name = type
+  this.status = status
+  this.code = code
+  this.message = message || null
+  this.headers = headers
+}
+
+util.inherits(RestError, Error)
 
 /**
  * Response error codes, and content negotiation methods.
@@ -33,9 +53,8 @@ var ResponseTypes = {
   Locked: 423,
 
   UpgradeRequired: function (protocols, code, message) {
-    var error = GenericRestError(426);
-    this.set('Upgrade', protocols);
-    return new error(code, message);
+    this.set('Upgrade', protocols)
+    return GenericRestError('UpgradeRequired', 426)(code, message)
   },
 
   PreconditionRequired: 428,
@@ -53,35 +72,35 @@ var ResponseTypes = {
 
   // Redirect types
   MovedPermanently: function (location) {
-    this.redirect(301, location);
+    this.redirect(301, location)
   },
 
   Found: function (location) {
-    this.redirect(302, location);
+    this.redirect(302, location)
   },
 
   NotModified: function () {
-    this.status(304).send();
+    this.status(304).send()
   },
 
   TemporaryRedirect: function (location) {
-    this.redirect(307, location);
+    this.redirect(307, location)
   },
 
   PermanentRedirect: function (location) {
-    this.redirect(308, location);
+    this.redirect(308, location)
   },
 
   // Content Helpers
   ok: function (view, body, api) {
-    var self = this;
+    var self = this
 
     function handleGeneric () {
-      return self.send(body);
+      return self.send(body)
     }
 
     function handleJSON () {
-      return self.json(body);
+      return self.json(body)
     }
 
     function handleXML () {
@@ -89,18 +108,18 @@ var ResponseTypes = {
     }
 
     function handleHTML () {
-      return self.render(view, body);
+      return self.render(view, body)
     }
 
-    this.status(200);
+    this.status(200)
 
     if (!body) {
-      body = view;
-      view = undefined;
+      body = view
+      view = undefined
     }
 
     if (typeof body === 'function') {
-      body();
+      body()
     } else {
       this.format({
         text: handleGeneric,
@@ -108,61 +127,53 @@ var ResponseTypes = {
 
         xml: function () {
           if (view) {
-            return handleXML();
+            return handleXML()
           }
 
-          return handleGeneric();
+          return handleGeneric()
         },
 
         html: function () {
           if (view) {
             if (api) {
-              return handleXML();
+              return handleXML()
             }
 
-            return handleHTML();
+            return handleHTML()
           }
 
-          return handleGeneric();
+          return handleGeneric()
         }
-      });
+      })
     }
   },
 
   NoContent: function () {
-    this.status(204).send();
+    this.status(204).send()
   },
 
   Continue: function () {
-    this.status(100).send();
+    this.status(100).send()
   },
 
   SwitchingProtocols: function (protocols) {
-    this.set('Upgrade', protocols).status(101).send();
+    this.set('Upgrade', protocols).status(101).send()
   },
 
   Processing: function () {
-    this.status(102).send();
+    this.status(102).send()
   }
-};
+}
 
 /**
  * Setup pre-defined status code for RestError method
  * @param {Number} status HTTP Status Code
  * @private
  */
-function GenericRestError (status) {
-  return function RestError (code, message, headers) {
-    if (!message) {
-      message = code;
-      code = status;
-    }
-
-    this.status = status;
-    this.code = code;
-    this.message = message;
-    this.headers = headers;
-  };
+function GenericRestError (type, status) {
+  return function Handler (code, message, header) {
+    return new RestError(type, status, code, message, header)
+  }
 }
 
 /**
@@ -175,18 +186,18 @@ function GenericRestError (status) {
  * @param  {Function} next
  */
 module.exports = function (req, res, next) {
-  var type;
+  var type
 
   // Iterate over each response type, and implement appropriate call signature
   for (type in ResponseTypes) {
     if (ResponseTypes.hasOwnProperty(type) && !res[type]) {
       if (typeof ResponseTypes[type] === 'number') {
-        res[type] = GenericRestError(ResponseTypes[type]);
+        res[type] = GenericRestError(type, ResponseTypes[type])
       } else {
-        res[type] = ResponseTypes[type].bind(res);
+        res[type] = ResponseTypes[type].bind(res)
       }
     }
   }
 
-  return next();
-};
+  return next()
+}

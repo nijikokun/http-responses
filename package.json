@@ -1,6 +1,6 @@
 {
   "name": "http-responses",
-  "version": "0.0.4",
+  "version": "0.0.5",
   "description": "Middleware for standardizing the way you send HTTP response statuses.",
   "main": "index.js",
   "scripts": {
@@ -33,5 +33,9 @@
   "homepage": "https://github.com/Nijikokun/http-responses",
   "dependencies": {
     "js2xmlparser": "^0.1.5"
+  },
+  "devDependencies": {
+    "mocha": "^2.0.1",
+    "should": "^4.3.0"
   }
 }
