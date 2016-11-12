@@ -68,7 +68,15 @@ app.use('/:id', function (req, res, next) {
         body: err.message
       }));
     }
-  });
+  }).catch(function (err) {
+    if (err.isHttpResponsesError) {
+        next(err)
+    } else {
+        next(new res.InternalServerError({
+            body: err.message
+        }));
+    }
+  })
 });
 ```
 
