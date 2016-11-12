@@ -7,7 +7,6 @@
 var xml = require('js2xmlparser')
 var util = require('util')
 
-
 function RestError (type, status, code, message, headers) {
   Error.call(this)
   Error.captureStackTrace(this, this.constructor)
@@ -22,6 +21,7 @@ function RestError (type, status, code, message, headers) {
   this.code = code
   this.message = message || null
   this.headers = headers
+  this.isHttpResponsesError = true;
 }
 
 util.inherits(RestError, Error)
